@@ -35,6 +35,8 @@ def main():
     Card.containers = (cards, updatable, drawable)
     clock = pygame.time.Clock()
     dt = 0
+    player_hand = Hand()
+    dealer_hand = Hand()
     winnings = 0
     luck = 1
 
@@ -62,7 +64,6 @@ def main():
                     dealer_hand = Hand()
                     for sprite in updatable:
                         sprite.kill()
-                    winnings = 0
                     state = "PLAYING"
             elif state == "PLAYING":
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
