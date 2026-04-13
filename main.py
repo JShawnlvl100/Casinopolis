@@ -5,7 +5,10 @@ import os
 from winnings import *
 from sounds import sounds
 from constants import *
-from card import draw_luck_card
+from resources import load_card_assets, CARD_IMAGES
+from card import Card
+from hand import Hand
+
 
 RESOLUTIONS = [
     (1280, 720),
@@ -18,6 +21,7 @@ def main():
         os.environ['SDL_AUDIODRIVER'] = 'directsound'
     pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
+    load_card_assets()
     sounds.load_assets()
     resolution_index = 0
     SCREEN_WIDTH, SCREEN_HEIGHT = RESOLUTIONS[resolution_index]
@@ -31,6 +35,8 @@ def main():
     Card.containers = (cards, updatable, drawable)
     clock = pygame.time.Clock()
     dt = 0
+    winnings = 0
+    luck = 1
 
     print(f"Starting Casinopolis with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
@@ -52,6 +58,8 @@ def main():
                     constants.SCREEN_WIDTH = SCREEN_WIDTH
                     constants.SCREEN_HEIGHT = SCREEN_HEIGHT
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    player_hand = Hand()
+                    dealer_hand = Hand()
                     for sprite in updatable:
                         sprite.kill()
                     winnings = 0
