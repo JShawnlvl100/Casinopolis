@@ -1,6 +1,6 @@
 import pygame
 import random
-from assets import CARD_IMAGES
+from resources import CARD_IMAGES
 
 class Card(pygame.sprite.Sprite):
     def __init__(self, rank, suit, start_pos, target_pos):
@@ -42,15 +42,11 @@ class Card(pygame.sprite.Sprite):
         self.face_up = True
         self.image = CARD_IMAGES[f"{self.suit}_{self.rank}"]
 
-def draw_luck_card(luck_stat, current_hand_value):
-    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-    
-    # If luck is high and player is at risk of busting
-    if luck_stat > 7 and player_current_score > 12:
-        # Heavily weight 'low' cards so they don't bust!
-        weights = [10, 10, 10, 10, 5, 2, 1, 1, 1, 1, 1, 1, 10]
-    else:
-        # Standard even weights
-        weights = [1] * len(ranks)
-        
-    return random.choices(ranks, weights=weights)[0]
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def flip(self):
+        self.face_up = True
+        # Swap the placeholder/back image for the real one
+        self.image = CARD_IMAGES[f"{self.suit}_{self.rank}"]
+

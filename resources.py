@@ -17,7 +17,7 @@ CARD_IMAGES = {}
 
 def load_card_assets():
     suits = ["hearts", "diamonds", "clubs", "spades"]
-    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"]
+    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     
     # Load every card into the dictionary
     for suit in suits:
