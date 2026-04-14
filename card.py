@@ -3,11 +3,12 @@ import random
 from resources import CARD_IMAGES
 
 class Card(pygame.sprite.Sprite):
-    def __init__(self, rank, suit, start_pos, target_pos):
+    def __init__(self, rank, suit, start_pos, target_pos, should_flip=True):
         super().__init__(self.containers)
         self.rank = rank
         self.suit = suit
         self.face_up = False # Start face down while moving?
+        self.should_flip = should_flip
         
         # Initial setup
         self.image = CARD_IMAGES["back"]
@@ -39,8 +40,9 @@ class Card(pygame.sprite.Sprite):
 
     def on_reach_target(self):
         # Flip the card over when it arrives!
-        self.face_up = True
-        self.image = CARD_IMAGES[f"{self.suit}_{self.rank}"]
+        if self.should_flip:
+            self.flip()
+        
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)

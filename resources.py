@@ -27,9 +27,10 @@ def load_card_assets():
             # Load and convert for better performance
             img = pygame.image.load(file_path).convert_alpha()
             # If 64x64 is too small or large, scale it here!
-            # img = pygame.transform.scale(img, (100, 140))
+            img = pygame.transform.scale(img, (100, 140))
             CARD_IMAGES[f"{suit}_{rank}"] = img
             
     # Don't forget the back of the card!
     back_path = resource_path("assets/cards/card_back.png")
     CARD_IMAGES["back"] = pygame.image.load(back_path).convert_alpha()
+    CARD_IMAGES["back"] = pygame.transform.scale(CARD_IMAGES["back"], (100,140))

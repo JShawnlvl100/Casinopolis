@@ -35,11 +35,16 @@ def main():
     Card.containers = (updatable, drawable)
     clock = pygame.time.Clock()
     dt = 0
+    val_dict = {
+            "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+            "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11
+        }
     player_hand = Hand()
     dealer_hand = Hand()
     winnings = 1000
     luck = 1
     hand_active = True
+    result_text = ""
 
     print(f"Starting Casinopolis with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
@@ -70,9 +75,21 @@ def main():
                     deal_initial_cards(player_hand, dealer_hand, luck)
                     state = "PLAYING"
                     hand_active = True
+                    if player_hand.value == 21:
+                        hand_active = False
+                        if dealer_hand.value != 21:
+                            winnings += 150
+                            result_text = "BLACKJACK! (3:2 Payout)"
+                        else:
+                            result_text = "PUSH (DOUBLE BLACKJACK)"
+                        for card_spite in dealer_hand.cards:
+                            card_spite.flip()
             elif state == "PLAYING":
                 if event.type == pygame.KEYDOWN:
                     if hand_active:
+                        if event.key == pygame.K_l:
+                            luck += 1
+                            print(f"Luck boosted! Luck is now {luck}")
                         if event.key == pygame.K_h:
                             # 1. Get a lucky card based on current score
                             rank, suit = draw_luck_card(luck, player_hand.value)
@@ -82,21 +99,61 @@ def main():
                             player_hand.add_card(new_card_sprite)
                             if player_hand.value > 21:
                                 hand_active = False
-                                winnings -= 100
+                                outcome = calculate_winnings(player_hand.value, dealer_hand.value, 100)
+                                winnings += outcome
+                                if outcome > 0:
+                                    result_text = "YOU WIN!"
+                                elif outcome < 0:
+                                    result_text = "YOU LOSE!"
+                                else:
+                                    result_text = "PUSH"
                                 for card_sprite in dealer_hand.cards:
                                     card_sprite.flip()
-                else:
-                    if event.key == pygame.K_SPACE:
-                        if winnings <= 0:
-                            state = "GAME_OVER"
+                            elif player_hand.value == 21:
+                                hand_active = False
+                                run_dealer_turn(dealer_hand, player_hand, luck)
+                                outcome = calculate_winnings(player_hand.value, dealer_hand.value, 100)
+                                winnings += outcome
+                                if outcome > 0:
+                                    result_text = "YOU WIN!"
+                                elif outcome < 0:
+                                    result_text = "YOU LOSE!"
+                                else:
+                                    result_text = "PUSH"
+                        if event.key == pygame.K_s:
+                            hand_active = False
+                            run_dealer_turn(dealer_hand, player_hand, luck)
+                            outcome = calculate_winnings(player_hand.value, dealer_hand.value, 100)
+                            winnings += outcome
+                            if outcome > 0:
+                                result_text = "YOU WIN!"
+                            elif outcome < 0:
+                                result_text = "YOU LOSE!"
+                            else:
+                                result_text = "PUSH"
                     else:
-                        # Reset the table
-                        player_hand = Hand()
-                        dealer_hand = Hand()
-                        for sprite in updatable:
-                            sprite.kill()
-                        deal_initial_cards(player_hand, dealer_hand, luck)
-                        hand_active = True 
+                        if event.key == pygame.K_SPACE:
+                            if winnings <= 0:
+                                state = "GAME_OVER"
+                        else:   
+                            # Reset the table
+                            for sprite in updatable:
+                                sprite.kill()
+                            player_hand = Hand()
+                            dealer_hand = Hand()
+
+                            deal_initial_cards(player_hand, dealer_hand, luck)
+                            hand_active = True 
+                            result_text = ""
+                            if player_hand.value == 21:
+                                hand_active = False
+                                if dealer_hand.value != 21:
+                                    winnings += 150
+                                    result_text = "BLACKJACK! (3:2 Payout)"
+                                else:
+                                    result_text = "PUSH (DOUBLE BLACKJACK)"
+                                for card_spite in dealer_hand.cards:
+                                    card_spite.flip()
             elif state == "GAME_OVER":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r: # 'R' to Restart
@@ -109,10 +166,20 @@ def main():
         if state == "START":
             ui.draw_start_screen(screen)
         elif state == "PLAYING":
+            if hand_active:
+                visible_value = sum([val_dict[c.rank] for c in dealer_hand.cards if c.face_up])
+                dealer_text = font.render(f"Dealer: {visible_value} + ?", True, (255, 255, 255))
+            else:
+                dealer_text = font.render(f"Dealer: {dealer_hand.value}", True, (255, 255, 255))
             winnings_surface = font.render(f"Winnings: {winnings}", True, (255, 255, 255))
             hand_value_surface = font.render(f"Hand: {player_hand.value}", True, (255, 255, 255))
+            results_surface = font.render(f"{result_text}", True, (255, 255, 255))
+            deck_image = CARD_IMAGES["back"]
+            screen.blit(deck_image, (1100, 100))
             screen.blit(winnings_surface, (10, 10))
-            screen.blit(hand_value_surface, (10, 70))
+            screen.blit(hand_value_surface, (10, 640))
+            screen.blit(dealer_text, (10, 40))
+            screen.blit(results_surface, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
             for draw in drawable:
                 draw.draw(screen)
             if not is_paused:
