@@ -19,24 +19,19 @@ class DummySound:
 class SoundManager:
     def __init__(self):
         # Start with dummy sounds
-        self.warp = DummySound()
-        self.shoot = DummySound()
-        self.powerup = DummySound()
-        self.explosion = DummySound()
+        self.shuffle = DummySound()
+        self.deal = DummySound()
         self.audio_available = False
 
     def load_assets(self):
         """Called AFTER pygame.init() in main.py"""
         if pygame.mixer.get_init():
             try:
-                self.warp = pygame.mixer.Sound(resource_path("assets/playerwarp.wav"))
-                self.shoot = pygame.mixer.Sound(resource_path("assets/playershoot.wav"))
-                self.powerup = pygame.mixer.Sound(resource_path("assets/powerUp.wav"))
-                self.explosion = pygame.mixer.Sound(resource_path("assets/asteroidexplosion.wav"))
+                self.shuffle = pygame.mixer.Sound(resource_path("assets/sounds/shuffle_deck.mp3"))
+                self.deal = pygame.mixer.Sound(resource_path("assets/sounds/deal_card.mp3"))
                 
-                self.warp.set_volume(0.4)
-                self.shoot.set_volume(0.2)
-                self.explosion.set_volume(0.4)
+                self.shuffle.set_volume(0.4)
+                self.deal.set_volume(0.2)
                 self.audio_available = True
                 print("Audio assets loaded successfully.")
             except pygame.error as e:

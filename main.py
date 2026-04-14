@@ -32,7 +32,7 @@ def main():
     cards = pygame.sprite.Group()
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
-    Card.containers = (cards, updatable, drawable)
+    Card.containers = (updatable, drawable)
     clock = pygame.time.Clock()
     dt = 0
     player_hand = Hand()
@@ -86,7 +86,8 @@ def main():
                                 for card_sprite in dealer_hand.cards:
                                     card_sprite.flip()
                 else:
-                    if winnings <= 0:
+                    if event.key == pygame.K_SPACE:
+                        if winnings <= 0:
                             state = "GAME_OVER"
                     else:
                         # Reset the table
@@ -94,6 +95,7 @@ def main():
                         dealer_hand = Hand()
                         for sprite in updatable:
                             sprite.kill()
+                        deal_initial_cards(player_hand, dealer_hand, luck)
                         hand_active = True 
             elif state == "GAME_OVER":
                 if event.type == pygame.KEYDOWN:
