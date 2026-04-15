@@ -22,7 +22,7 @@ def load_card_assets():
     # Load every card into the dictionary
     for suit in suits:
         for rank in ranks:
-            relative_file = f"assets/cards/{suit}_{rank}.png"
+            relative_file = os.path.join("assets","cards", f"{suit}_{rank}.png")
             file_path = resource_path(relative_file)
             # Load and convert for better performance
             img = pygame.image.load(file_path).convert_alpha()
@@ -31,6 +31,7 @@ def load_card_assets():
             CARD_IMAGES[f"{suit}_{rank}"] = img
             
     # Don't forget the back of the card!
-    back_path = resource_path("assets/cards/card_back.png")
+    back_rel = os.path.join("assets", "cards", "card_back.png")
+    back_path = resource_path(back_rel)
     CARD_IMAGES["back"] = pygame.image.load(back_path).convert_alpha()
     CARD_IMAGES["back"] = pygame.transform.scale(CARD_IMAGES["back"], (100,140))
